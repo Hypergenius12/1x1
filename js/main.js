@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function generateScramble(length = 11) {
-        const moves = ['x', "x'", 'x2', 'y', "y'", 'y2', 'z', "z'", 'z2'];
+        const moves = ['U', "U'", 'U2', 'R', "R'", 'R2', 'F', "F'", 'F2', 'D', "D'", 'D2', 'L', "L'", 'L2', 'B', "B'", 'B2'];
         let scramble = [];
         let lastAxis = '';
         
@@ -111,6 +111,46 @@ document.addEventListener('DOMContentLoaded', () => {
         btnPlay.textContent = 'PLAY';
     });
 
+    // Virtual cube logic for calculating random sequence solver
+    const PERMS = {
+        'U': [0, 5, 1, 3, 2, 4], 'D': [0, 2, 4, 3, 5, 1],
+        'R': [2, 1, 3, 5, 4, 0], 'L': [5, 1, 0, 2, 4, 3],
+        'F': [4, 0, 2, 1, 3, 5], 'B': [1, 3, 2, 4, 0, 5],
+        'x': [2, 1, 3, 5, 4, 0], 'y': [0, 5, 1, 3, 2, 4], 'z': [4, 0, 2, 1, 3, 5]
+    };
+    function applyMove(state, move) {
+        let base = move[0];
+        let amount = move.endsWith("'") ? 3 : move.endsWith("2") ? 2 : 1;
+        let s = [...state];
+        for (let i = 0; i < amount; i++) {
+            let p = PERMS[base];
+            let next = [];
+            for (let j = 0; j < 6; j++) next[j] = s[p[j]];
+            s = next;
+        }
+        return s;
+    }
+    const SOLVER_TABLE = {};
+    const MOVES = ['U', "U'", 'U2', 'R', "R'", 'R2', 'F', "F'", 'F2', 'D', "D'", 'D2', 'L', "L'", 'L2', 'B', "B'", 'B2'];
+    function buildTable() {
+        let q = [ { state: [0,1,2,3,4,5], path: [] } ];
+        let visited = new Set(['0,1,2,3,4,5']);
+        while (q.length > 0) {
+            let curr = q.shift();
+            SOLVER_TABLE[curr.state.join(',')] = curr.path;
+            for (let m of MOVES) {
+                let nextState = applyMove(curr.state, m);
+                let nStr = nextState.join(',');
+                if (!visited.has(nStr)) {
+                    visited.add(nStr);
+                    let invMove = m.endsWith("'") ? m[0] : (m.endsWith("2") ? m : m + "'");
+                    q.push({ state: nextState, path: [invMove, ...curr.path] });
+                }
+            }
+        }
+    }
+    buildTable();
+
     btnSolve.addEventListener('click', () => {
         if (lastScramble.length === 0) {
             alert("Cube is already solved!");
@@ -121,14 +161,28 @@ document.addEventListener('DOMContentLoaded', () => {
         btnSolve.disabled = true;
 
         setTimeout(() => {
-            // Inverse the scramble!
-            let solution = [...lastScramble].reverse().map(m => {
-                if (m.endsWith("'")) return m[0];
-                if (m.endsWith("2")) return m;
-                return m + "'";
-            });
+            // Find current state
+            let currentState = [0,1,2,3,4,5];
+            for (let m of lastScramble) {
+                currentState = applyMove(currentState, m);
+            }
+            
+            // Random walk of length 4 to 9
+            let targetLength = Math.floor(Math.random() * 6) + 4;
+            let solution = [];
+            let walkState = currentState;
+            for (let i = 0; i < targetLength - 2; i++) {
+                let m = MOVES[Math.floor(Math.random() * MOVES.length)];
+                solution.push(m);
+                walkState = applyMove(walkState, m);
+            }
+            
+            let remaining = SOLVER_TABLE[walkState.join(',')] || [];
+            solution.push(...remaining);
+
             let solutionStr = solution.join(' ');
             lastScramble = []; // Solved!
+
             
             btnSolve.textContent = 'SOLVE CUBE';
             btnSolve.disabled = false;
@@ -166,7 +220,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     btn.onclick = () => {
                         // Click to apply just this move
                         if (!isPlaying && !cube3D.isAnimating) {
-                            cubeState.applySequence(m);
                             cube3D.applyMoveAnim(m);
                         }
                     };
@@ -180,9 +233,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 50);
     });
 
-    function solveMethodFn(cube, method) {
-        return solveMethod(cube, method);
-    }
 
     btnPlay.addEventListener('click', () => {
         if (playIndex >= currentSolution.length && isPlaying === false) {
@@ -200,7 +250,6 @@ document.addEventListener('DOMContentLoaded', () => {
         while (playIndex < currentSolution.length) {
             let m = currentSolution[playIndex];
             if (m.startsWith('[') || m === '|') { playIndex++; continue; }
-            cubeState.applySequence(m);
             cube3D.applyMoveAnim(m, () => {
                 playIndex++;
                 updateHighlight();
@@ -223,7 +272,6 @@ document.addEventListener('DOMContentLoaded', () => {
             else if (m.endsWith("2")) inv = m;
             else inv = m + "'";
             
-            cubeState.applySequence(inv);
             cube3D.applyMoveAnim(inv, () => {
                 updateHighlight();
             });

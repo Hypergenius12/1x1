@@ -318,13 +318,23 @@ class Cube3D {
             angle = Math.PI;
         }
         
-        if (baseMove === 'x') {
-            axis = new THREE.Vector3(1, 0, 0); dir = -1; piecesToMove = [0];
-        } else if (baseMove === 'y') {
-            axis = new THREE.Vector3(0, 1, 0); dir = -1; piecesToMove = [0];
-        } else if (baseMove === 'z') {
-            axis = new THREE.Vector3(0, 0, 1); dir = -1; piecesToMove = [0];
-        }
+        let axisMapping = {
+            'x': { axis: new THREE.Vector3(1, 0, 0), dir: -1 },
+            'y': { axis: new THREE.Vector3(0, 1, 0), dir: -1 },
+            'z': { axis: new THREE.Vector3(0, 0, 1), dir: -1 },
+            'R': { axis: new THREE.Vector3(1, 0, 0), dir: -1 },
+            'L': { axis: new THREE.Vector3(1, 0, 0), dir: 1 },
+            'U': { axis: new THREE.Vector3(0, 1, 0), dir: -1 },
+            'D': { axis: new THREE.Vector3(0, 1, 0), dir: 1 },
+            'F': { axis: new THREE.Vector3(0, 0, 1), dir: -1 },
+            'B': { axis: new THREE.Vector3(0, 0, 1), dir: 1 }
+        };
+        
+        let map = axisMapping[baseMove];
+        if (!map) return;
+        axis = map.axis;
+        dir = map.dir;
+        piecesToMove = [0];
 
         let targetAngle = angle * dir;
         
