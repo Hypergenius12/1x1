@@ -252,3 +252,29 @@ select:focus {
     transform: translate(2px, 2px);
     box-shadow: 0px 0px 0px #000000;
 }
+
+
+.bottom-left-link {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    z-index: 20;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    color: #111;
+    text-decoration: none;
+    padding: 8px 12px;
+    background: #fff;
+    border: 2px solid #000;
+    box-shadow: 2px 2px 0px #000;
+    transition: all 0.1s;
+}
+
+.bottom-left-link:hover {
+    background: #f0f0f0;
+}
+
+.bottom-left-link:active {
+    transform: translate(2px, 2px);
+    box-shadow: 0px 0px 0px #000;
+}
