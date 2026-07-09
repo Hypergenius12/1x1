@@ -1,0 +1,254 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', -apple-system, sans-serif;
+}
+
+body {
+    overflow: hidden;
+    background: #ffffff;
+    color: #111111;
+}
+
+#canvas-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1;
+}
+
+#ui-panel {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 300px;
+    background: #ffffff;
+    border: 2px solid #000000;
+    padding: 20px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    box-shadow: 4px 4px 0px #000000;
+}
+
+h1 {
+    font-size: 1.25rem;
+    font-weight: 800;
+    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: -0.5px;
+}
+
+button {
+    background: #ffffff;
+    color: #000000;
+    border: 2px solid #000000;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.1s;
+    box-shadow: 2px 2px 0px #000000;
+}
+
+button:hover {
+    background: #f0f0f0;
+}
+
+button:active {
+    transform: translate(2px, 2px);
+    box-shadow: 0px 0px 0px #000000;
+}
+
+.primary-btn {
+    background: #000000;
+    color: #ffffff;
+    width: 100%;
+}
+
+.primary-btn:hover {
+    background: #222222;
+}
+
+.controls-group, .solver-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.controls-group {
+    flex-direction: row;
+}
+
+.controls-group button {
+    flex: 1;
+}
+
+label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+select {
+    width: 100%;
+    padding: 8px;
+    background: #ffffff;
+    color: #000000;
+    border: 2px solid #000000;
+    outline: none;
+    cursor: pointer;
+    font-weight: 600;
+    box-shadow: 2px 2px 0px #000000;
+    transition: all 0.1s;
+    appearance: none;
+    border-radius: 0;
+}
+
+select:focus {
+    transform: translate(2px, 2px);
+    box-shadow: 0px 0px 0px #000000;
+}
+
+#solution-output {
+    margin-top: 8px;
+    border-top: 2px solid #000000;
+    padding-top: 16px;
+}
+
+#solution-output.hidden {
+    display: none;
+}
+
+#solution-output h3 {
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+}
+
+#solution-text {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.move-btn {
+    background: #ffffff;
+    border: 2px solid #000000;
+    padding: 4px 8px;
+    font-family: monospace;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 2px 2px 0px #000000;
+}
+
+.move-btn:hover {
+    background: #e2e8f0;
+}
+
+.move-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 0px 0px 0px #000000;
+}
+
+.move-btn.active {
+    background: #000000;
+    color: #ffffff;
+}
+
+.step-marker {
+    width: 100%;
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-top: 8px;
+    margin-bottom: 4px;
+    color: #444;
+}
+
+.playback-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.playback-controls button {
+    flex: 1;
+}
+
+.manual-controls {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    text-align: center;
+    border-top: 2px solid #000000;
+    padding-top: 16px;
+}
+
+.settings-group {
+    background: #ffffff;
+    border: 2px solid #000;
+    padding: 12px;
+    margin-top: 16px;
+    box-shadow: 4px 4px 0 #000;
+}
+.settings-group summary {
+    font-size: 0.9rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    cursor: pointer;
+    outline: none;
+    user-select: none;
+}
+.settings-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 12px;
+    border-top: 2px solid #000;
+    padding-top: 12px;
+}
+.settings-content label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+}
+.settings-content select {
+    width: 140px;
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: #ffffff;
+    border: 2px solid #000000;
+    padding: 8px 12px;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    border-radius: 0;
+    cursor: pointer;
+    box-shadow: 2px 2px 0 #000000;
+    background-image: url('data:image/svg+xml;utf8,<svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L9 1" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 30px;
+    color: #000000;
+    transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.settings-content select:focus {
+    outline: none;
+    background-color: #f1f5f9;
+}
+
+.settings-content select:active {
+    transform: translate(2px, 2px);
+    box-shadow: 0px 0px 0px #000000;
+}
