@@ -251,26 +251,7 @@ class Cube3D {
             });
             this.scene.remove(anim.group);
 
-            // Correct cyclic array mapping!
-            let newPieces = [...this.pieces];
-            let p = anim.piecesToMove;
-            let perm;
-            
-            if (anim.isPrime) {
-                // Shift left
-                perm = [p[1], p[2], p[3], p[0]];
-            } else if (anim.isDouble) {
-                // Shift 2
-                perm = [p[2], p[3], p[0], p[1]];
-            } else {
-                // Shift right
-                perm = [p[3], p[0], p[1], p[2]];
-            }
-
-            for (let i = 0; i < 4; i++) {
-                newPieces[p[i]] = this.pieces[perm[i]];
-            }
-            this.pieces = newPieces;
+            // No permutation needed for 1x1 cube.
 
             this.animationQueue.shift();
             if (anim.callback) anim.callback();
