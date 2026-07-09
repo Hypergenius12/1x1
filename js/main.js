@@ -7,16 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnScramble = document.getElementById('btn-scramble');
     const btnReset = document.getElementById('btn-reset');
     const btnSolve = document.getElementById('btn-solve');
-    const solveMethodSelect = document.getElementById('solve-method');
-    const settingSpeed = document.getElementById('setting-speed');
-    const settingColors = document.getElementById('setting-colors');
-    const settingCamera = document.getElementById('setting-camera');
-    const settingStyle = document.getElementById('setting-style');
-    
-    if (settingSpeed) settingSpeed.addEventListener('change', (e) => cube3D.setSpeed(e.target.value));
-    if (settingColors) settingColors.addEventListener('change', (e) => cube3D.setColors(e.target.value));
-    if (settingCamera) settingCamera.addEventListener('change', (e) => cube3D.setCamera(e.target.value));
-    if (settingStyle) settingStyle.addEventListener('change', (e) => cube3D.setStyle(e.target.value));
 
     const solutionOutput = document.getElementById('solution-output');
     const solutionLength = document.getElementById('solution-length');
