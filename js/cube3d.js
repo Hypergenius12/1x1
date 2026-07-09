@@ -37,7 +37,15 @@ class Cube3D {
         this.animationQueue = [];
         this.animSpeed = 8;
         this.initCube();
+        
+        // Raycasting for interactive turning
+        this.raycaster = new THREE.Raycaster();
+        this.mouse = new THREE.Vector2();
+        this.dragInfo = null;
 
+        this.renderer.domElement.addEventListener('pointerdown', this.onPointerDown.bind(this), { capture: true });
+        window.addEventListener('pointermove', this.onPointerMove.bind(this), { capture: true });
+        window.addEventListener('pointerup', this.onPointerUp.bind(this), { capture: true });
         window.addEventListener('resize', this.onWindowResize.bind(this), false);
 
         this.animate = this.animate.bind(this);
