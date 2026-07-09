@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Listen for manual swipe-to-turn moves from cube3d
     window.addEventListener('manualMove', (e) => {
         let moveStr = e.detail;
+        lastScramble.push(moveStr);
         cube3D.applyMoveAnim(moveStr);
     });
 

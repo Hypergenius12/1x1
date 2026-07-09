@@ -184,7 +184,125 @@ class Cube3D {
             this.pieces.push(mesh);
         }
     }
+    onPointerDown(event) {
+        if (this.isAnimating) return;
+        
+        // Convert mouse position to normalized device coordinates
+        let rect = this.renderer.domElement.getBoundingClientRect();
+        this.mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+        
+        this.raycaster.setFromCamera(this.mouse, this.camera);
+        let intersects = this.raycaster.intersectObjects(this.pieces);
+        
+        if (intersects.length > 0) {
+            event.stopImmediatePropagation();
+            let hit = intersects[0];
+            
+            // Ignore drag on interior (black) faces
+            if (hit.object.material[hit.face.materialIndex].color.getHex() === COLORS.X) {
+                return;
+            }
+            
+            // Get normal in world space
+            let normalMatrix = new THREE.Matrix3().getNormalMatrix(hit.object.matrixWorld);
+            let worldNormal = hit.face.normal.clone().applyMatrix3(normalMatrix).normalize().round();
 
+            this.dragInfo = {
+                mesh: hit.object,
+                normal: worldNormal,
+                startX: event.clientX,
+                startY: event.clientY,
+                moveDetermined: false
+            };
+        }
+    }
+
+    onPointerMove(event) {
+        if (!this.dragInfo || this.dragInfo.moveDetermined || this.isAnimating) {
+            this.dragInfo = null;
+            return;
+        }
+        event.stopImmediatePropagation();
+        
+        let dx = event.clientX - this.dragInfo.startX;
+        let dy = event.clientY - this.dragInfo.startY;
+
+        if (Math.abs(dx) > 10 || Math.abs(dy) > 10) {
+            this.dragInfo.moveDetermined = true;
+            
+            let N = this.dragInfo.normal;
+            let P = this.dragInfo.mesh.position;
+            
+            // Find tangent axes
+            let T1, T2;
+            if (Math.abs(N.y) === 1) { T1 = new THREE.Vector3(1,0,0); T2 = new THREE.Vector3(0,0,1); }
+            else if (Math.abs(N.x) === 1) { T1 = new THREE.Vector3(0,1,0); T2 = new THREE.Vector3(0,0,1); }
+            else { T1 = new THREE.Vector3(1,0,0); T2 = new THREE.Vector3(0,1,0); }
+
+            // Project tangents to screen
+            let w = window.innerWidth / 2;
+            let h = window.innerHeight / 2;
+            
+            let p0 = P.clone().project(this.camera);
+            let p0_px = new THREE.Vector2(p0.x * w, p0.y * h);
+            
+            let p1 = P.clone().add(T1).project(this.camera);
+            let p1_px = new THREE.Vector2(p1.x * w, p1.y * h);
+            let vT1 = new THREE.Vector2().subVectors(p1_px, p0_px).normalize();
+            
+            let p2 = P.clone().add(T2).project(this.camera);
+            let p2_px = new THREE.Vector2(p2.x * w, p2.y * h);
+            let vT2 = new THREE.Vector2().subVectors(p2_px, p0_px).normalize();
+            
+            // Note: screen Y goes down, but NDC Y goes up. So we negate dy to match NDC space.
+            let drag2D = new THREE.Vector2(dx, -dy).normalize();
+            
+            let dot1 = drag2D.dot(vT1);
+            let dot2 = drag2D.dot(vT2);
+            
+            let D;
+            if (Math.abs(dot1) > Math.abs(dot2)) {
+                D = T1.clone().multiplyScalar(Math.sign(dot1));
+            } else {
+                D = T2.clone().multiplyScalar(Math.sign(dot2));
+            }
+            
+            // Rotation axis = Normal x Drag Direction
+            let A = new THREE.Vector3().crossVectors(N, D).round();
+            
+            let moveStr = null;
+            let standardMoveVec = null;
+            
+            if (Math.abs(A.x) === 1) {
+                moveStr = 'x';
+                standardMoveVec = new THREE.Vector3(-1, 0, 0); // Downward rotation
+            } else if (Math.abs(A.y) === 1) {
+                moveStr = 'y';
+                standardMoveVec = new THREE.Vector3(0, -1, 0);
+            } else if (Math.abs(A.z) === 1) {
+                moveStr = 'z';
+                standardMoveVec = new THREE.Vector3(0, 0, -1);
+            }
+            
+            if (moveStr) {
+                // If the desired axis matches the standard vector, it's a normal move. Else, it's Prime.
+                if (A.dot(standardMoveVec) < 0) {
+                    moveStr += "'";
+                }
+                window.dispatchEvent(new CustomEvent('manualMove', { detail: moveStr }));
+            }
+            
+            this.dragInfo = null;
+        }
+    }
+
+    onPointerUp(event) {
+        if (this.dragInfo) {
+            event.stopImmediatePropagation();
+            this.dragInfo = null;
+        }
+    }
 
     applyMoveAnim(moveStr, callback) {
         let axis, dir, piecesToMove;
