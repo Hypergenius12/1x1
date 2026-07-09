@@ -22,53 +22,10 @@
         </div>
         
         <div class="solver-group">
-            <label for="solve-method">Method:</label>
-            <select id="solve-method">
-                <option value="optimal">Optimal (Shortest Path)</option>
-            </select>
             <button id="btn-solve" class="primary-btn">Solve Cube</button>
         </div>
 
-        <div class="settings-group">
-            <details>
-                <summary>Settings</summary>
-                <div class="settings-content">
-                    <label>
-                        Animation Speed:
-                        <select id="setting-speed">
-                            <option value="slow">Slow</option>
-                            <option value="normal" selected>Normal</option>
-                            <option value="fast">Fast</option>
-                            <option value="instant">Instant</option>
-                        </select>
-                    </label>
-                    <label>
-                        Cube Colors:
-                        <select id="setting-colors">
-                            <option value="standard" selected>Standard</option>
-                            <option value="pastel">Pastel</option>
-                            <option value="neon">Neon</option>
-                        </select>
-                    </label>
-                    <label>
-                        Camera:
-                        <select id="setting-camera">
-                            <option value="perspective" selected>Perspective</option>
-                            <option value="orthographic">Orthographic</option>
-                            <option value="isometric">Isometric (Snap)</option>
-                        </select>
-                    </label>
-                    <label>
-                        Style:
-                        <select id="setting-style">
-                            <option value="block" selected>Block</option>
-                            <option value="floating">Floating</option>
-                            <option value="wireframe">Wireframe</option>
-                        </select>
-                    </label>
-                </div>
-            </details>
-        </div>
+
 
         <div id="solution-output" class="hidden">
             <h3>Solution (<span id="solution-length">0</span> moves)</h3>
